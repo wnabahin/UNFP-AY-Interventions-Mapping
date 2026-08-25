@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UNFPA AY Mapping - Combined Draft Dashboard</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;--panel:#ffffff;--text:#111827;--muted:#64748b;--border:#e5e7eb;
+      --accent:#2563eb;--accent2:#14b8a6;--warn:#f59e0b;--danger:#dc2626;--ok:#16a34a;
+      --soft-blue:#eef6ff;--soft-warn:#fff7ed;--soft-green:#ecfdf5;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{--bg:#101218;--panel:#171a22;--text:#f8fafc;--muted:#a4adbd;--border:#2b3040;--soft-blue:#142033;--soft-warn:#2a1d12;--soft-green:#10251b;}
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+    .wrap{max-width:1240px;margin:0 auto;padding:24px}
+    .hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.9fr);gap:18px;margin-bottom:18px;align-items:stretch}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;box-shadow:0 14px 30px rgba(15,23,42,.06)}
+    .intro{padding:26px;position:relative;overflow:hidden}
+    .intro:after{content:"";position:absolute;right:-90px;top:-100px;width:280px;height:280px;border-radius:999px;background:linear-gradient(135deg,rgba(37,99,235,.18),rgba(20,184,166,.14));pointer-events:none}
+    h1{font-size:clamp(1.7rem,3vw,2.65rem);line-height:1.06;letter-spacing:-.035em;margin:0 0 10px;color:var(--text)}
+    h2{font-size:1.16rem;margin:0 0 8px;color:var(--text)}
+    h3{font-size:1rem;margin:0 0 6px;color:var(--text)}
+    p{margin:0;color:var(--muted)}
+    .tag{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);background:var(--soft-blue);color:var(--text);border-radius:999px;padding:6px 10px;font-weight:700;font-size:.82rem;margin-bottom:12px}
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent)}
+    .meta{margin-top:12px;font-size:.9rem;color:var(--muted)}
+    .kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}
+    .kpi{padding:15px;border-radius:14px;background:color-mix(in srgb,var(--panel) 80%,var(--bg));border:1px solid var(--border);min-width:0}
+    .kpi strong{display:block;font-size:clamp(1.5rem,4vw,2.35rem);line-height:1;margin-bottom:6px;color:var(--text);overflow-wrap:anywhere}
+    .kpi span{font-size:.86rem;color:var(--muted);line-height:1.35;display:block}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+    .tabs button{border:1px solid var(--border);background:var(--panel);color:var(--text);min-height:42px;padding:9px 14px;border-radius:999px;cursor:pointer;font-weight:700}
+    .tabs button[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:transparent}
+    .tab-panel{display:none}.tab-panel.active{display:block}
+    .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .card{padding:18px;overflow:hidden}.sub{font-size:.86rem;color:var(--muted);margin-bottom:14px}
+    .bar-list{display:grid;gap:10px}.bar-row{display:grid;grid-template-columns:minmax(150px,1fr) minmax(130px,1.45fr) auto;gap:10px;align-items:center;font-size:.88rem}.compact .bar-row{grid-template-columns:minmax(130px,1fr) minmax(90px,1fr) auto}
+    .label{min-width:0;overflow-wrap:anywhere;color:var(--text)}.track{height:12px;border-radius:999px;background:color-mix(in srgb,var(--border) 70%,transparent);overflow:hidden}.fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));min-width:2px}.value{font-weight:800;white-space:nowrap;color:var(--text)}
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.controls label{font-size:.86rem;color:var(--muted);font-weight:700}select{min-height:42px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 12px;font-size:16px}
+    .insight{padding:16px;border-radius:16px;background:var(--soft-blue);border:1px solid color-mix(in srgb,var(--accent) 25%,var(--border));font-size:.92rem;color:var(--text)}.callout{padding:16px;border-radius:16px;background:var(--soft-warn);border:1px solid color-mix(in srgb,var(--warn) 35%,var(--border));font-size:.92rem;color:var(--text)}.good{background:var(--soft-green);border-color:color-mix(in srgb,var(--ok) 35%,var(--border))}
+    table{width:100%;border-collapse:collapse;font-size:.86rem}th,td{padding:10px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}th{background:color-mix(in srgb,var(--panel) 82%,var(--bg));color:var(--text)}.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:14px;max-height:420px}
+    .pill{display:inline-flex;border-radius:999px;padding:4px 9px;font-weight:800;font-size:.78rem;background:color-mix(in srgb,var(--border) 50%,transparent);color:var(--text);white-space:nowrap}.pill.good{background:#dcfce7;color:#166534}.pill.partial{background:#fef3c7;color:#92400e}.pill.flag{background:#fee2e2;color:#991b1b}
+    .note{font-size:.84rem;color:var(--muted);margin-top:10px}
+    @media(max-width:920px){.wrap{padding:16px}.hero,.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}.bar-row{grid-template-columns:1fr;gap:5px}.value{justify-self:start}}
+    @media(max-width:440px){.kpi-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap" id="dash">
+  <section class="hero">
+    <div class="panel intro">
+      <div class="tag"><span class="dot"></span> Draft data snapshot · not yet validated</div>
+      <h1>UNFPA adolescent and youth mapping: combined survey dashboard</h1>
+      <p>This dashboard provides a quick, shareable glimpse of the current draft evidence from the organization profile survey, intervention-level 5Ws survey, and donor consultation survey. It uses cleaned datasets prepared as of 23 August 2026 and shows aggregate results only.</p>
+      <p class="meta">Important: figures are self-reported and operational. Reported reach is not deduplicated and may mix unique participants, cumulative participants and service contacts.</p>
+    </div>
+    <div class="panel kpi-grid">
+      <div class="kpi"><strong>83</strong><span>Cleaned organizations in actor profile dataset</span></div>
+      <div class="kpi"><strong>149</strong><span>Cleaned intervention records in 5Ws dataset</span></div>
+      <div class="kpi"><strong>7</strong><span>Cleaned donor/funding institution records</span></div>
+      <div class="kpi"><strong>940,962</strong><span>Reported actual reach, not deduplicated</span></div>
+    </div>
+  </section>
+
+  <nav class="tabs" aria-label="Dashboard sections">
+    <button type="button" id="tab-snapshot-btn" aria-selected="true" aria-controls="tab-snapshot">Snapshot</button>
+    <button type="button" id="tab-actors-btn" aria-selected="false" aria-controls="tab-actors">Actor profile</button>
+    <button type="button" id="tab-interventions-btn" aria-selected="false" aria-controls="tab-interventions">Interventions</button>
+    <button type="button" id="tab-donors-btn" aria-selected="false" aria-controls="tab-donors">Donor view</button>
+  </nav>
+
+  <section id="tab-snapshot" class="tab-panel active" role="tabpanel" aria-labelledby="tab-snapshot-btn">
+    <div class="grid-4">
+      <div class="panel card"><h3>Raw data reviewed</h3><p class="sub">Survey submissions before consolidation.</p><div class="kpi" style="margin:0"><strong>266</strong><span>100 profile + 156 interventions + 10 donor submissions</span></div></div>
+      <div class="panel card"><h3>Canonical implementation base</h3><p class="sub">After alias and name crosswalk.</p><div class="kpi" style="margin:0"><strong>75</strong><span>Organizations represented in intervention records</span></div></div>
+      <div class="panel card"><h3>Crossmatched organizations</h3><p class="sub">Profiles linked to interventions.</p><div class="kpi" style="margin:0"><strong>70</strong><span>Profile organizations matched to at least one intervention</span></div></div>
+      <div class="panel card"><h3>Donor participation</h3><p class="sub">Current/recent AY funding.</p><div class="kpi" style="margin:0"><strong>6 of 7</strong><span>Donor records clearly fund AY-related interventions</span></div></div>
+    </div>
+    <div class="grid-2" style="margin-top:16px">
+      <div class="panel card compact">
+        <h2>Cross-survey linkage</h2><p class="sub">How the actor and intervention datasets align after cleaning and alias matching.</p><div id="chart-crossmatch" class="bar-list"></div>
+      </div>
+      <div class="panel card compact">
+        <h2>Draft data quality flags</h2><p class="sub">Aggregate revision flags across cleaned datasets.</p><div id="chart-quality" class="bar-list"></div>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-top:16px">
+      <div class="insight"><strong>Coverage strength:</strong> the mapping has a strong intervention base for Gaza and multi-sector AY programming, especially MHPSS, protection, education, child protection and GBV.</div>
+      <div class="insight"><strong>Donor signal:</strong> donors identify SRH, GBV, TVET/employability, MHPSS, child protection, digital inclusion and livelihoods as underfunded or insufficiently scaled.</div>
+      <div class="callout"><strong>Use carefully:</strong> lower counts in West Bank and East Jerusalem should be triangulated before being interpreted as confirmed absence of services.</div>
+    </div>
+  </section>
+
+  <section id="tab-actors" class="tab-panel" role="tabpanel" aria-labelledby="tab-actors-btn">
+    <div class="grid-2">
+      <div class="panel card"><h2>Organization type</h2><p class="sub">Cleaned organization-level records, one row per organization.</p><div id="chart-org-type" class="bar-list"></div></div>
+      <div class="panel card compact"><h2>AY engagement classification</h2><p class="sub">How organizations describe their engagement with adolescents and youth.</p><div id="chart-ay-class" class="bar-list"></div></div>
+    </div>
+    <div class="grid-2" style="margin-top:16px">
+      <div class="panel card"><h2>Main organizational sectors</h2><p class="sub">Multi-select organization profile responses.</p><div class="controls"><label for="org-sector-count">Show top</label><select id="org-sector-count"><option value="8">8 sectors</option><option value="12" selected>12 sectors</option><option value="20">20 sectors</option></select></div><div id="chart-org-sectors" class="bar-list"></div></div>
+      <div class="panel card compact"><h2>Organizational systems</h2><p class="sub">Self-reported coordination and AAP/safeguarding mechanisms.</p><div id="chart-org-systems" class="bar-list"></div></div>
+    </div>
+  </section>
+
+  <section id="tab-interventions" class="tab-panel" role="tabpanel" aria-labelledby="tab-interventions-btn">
+    <div class="grid-2">
+      <div class="panel card compact"><h2>Intervention status</h2><p class="sub">Implementation status of 149 cleaned intervention records.</p><div id="chart-int-status" class="bar-list"></div></div>
+      <div class="panel card compact"><h2>Current funding status</h2><p class="sub">Funding situation as reported by implementing organizations.</p><div id="chart-int-funding" class="bar-list"></div></div>
+    </div>
+    <div class="grid-2" style="margin-top:16px">
+      <div class="panel card"><h2>All sectors combined</h2><p class="sub">Primary plus secondary sectors. Multi-sector interventions appear in several categories.</p><div class="controls"><label for="int-sector-count">Show top</label><select id="int-sector-count"><option value="8">8 sectors</option><option value="12" selected>12 sectors</option><option value="20">20 sectors</option></select></div><div id="chart-int-sectors" class="bar-list"></div></div>
+      <div class="panel card"><h2>Governorate coverage</h2><p class="sub">One intervention may report more than one governorate.</p><div class="controls"><label for="gov-count">Show top</label><select id="gov-count"><option value="8">8 governorates</option><option value="12" selected>12 governorates</option><option value="18">All areas</option></select></div><div id="chart-govs" class="bar-list"></div></div>
+    </div>
+    <div class="grid-2" style="margin-top:16px">
+      <div class="panel card"><h2>Targeted AY groups</h2><p class="sub">Target groups selected by interventions.</p><div class="controls"><label for="group-count">Show top</label><select id="group-count"><option value="8">8 groups</option><option value="12" selected>12 groups</option><option value="20">All groups</option></select></div><div id="chart-groups" class="bar-list"></div></div>
+      <div class="panel card"><h2>Operational constraints</h2><p class="sub">Main barriers affecting youth-related programming.</p><div id="chart-constraints" class="bar-list"></div></div>
+    </div>
+  </section>
+
+  <section id="tab-donors" class="tab-panel" role="tabpanel" aria-labelledby="tab-donors-btn">
+    <div class="grid-2">
+      <div class="panel card"><h2>Donor-funded / prioritized sectors</h2><p class="sub">Count of cleaned donor records selecting each sector.</p><div id="chart-donor-sectors" class="bar-list"></div></div>
+      <div class="panel card"><h2>Donor-prioritized AY groups</h2><p class="sub">Groups prioritized in donor/funding institution responses.</p><div id="chart-donor-groups" class="bar-list"></div></div>
+    </div>
+    <div class="grid-2" style="margin-top:16px">
+      <div class="panel card"><h2>Underfunded sectors according to donors</h2><p class="sub">Donor perceptions of sectors requiring more investment.</p><div id="chart-under-sectors" class="bar-list"></div></div>
+      <div class="panel card"><h2>Least reached AY groups according to donors</h2><p class="sub">Groups that donors identified as least reached by current support.</p><div id="chart-least-groups" class="bar-list"></div></div>
+    </div>
+    <div class="grid-3" style="margin-top:16px">
+      <div class="insight"><strong>Priority convergence:</strong> education, SRH, TVET/employability and early recovery/resilience appear strongly in donor priorities.</div>
+      <div class="callout"><strong>Funding amount caution:</strong> donor funding ranges should not be totaled because several entries are broader programme amounts, missing, or conflicting.</div>
+      <div class="insight"><strong>Localization angle:</strong> three donor records report direct funding to local/youth-led/women-led/OPD actors, with two mixed/conflicting records requiring review.</div>
+    </div>
+  </section>
+</div>
+<script>
+(function(){
+  const DATA={
+    crossmatch:[["Profile + matched interventions",70,83],["Profile but no intervention",13,83],["Intervention orgs with no profile",5,75],["Intervention records without profile",6,149]],
+    quality:[["Intervention records: medium revision",96,149],["Intervention records: high revision",30,149],["Organization records needing revision",22,83],["Donor records needing revision",4,7]],
+    orgType:[["National NGO",48,83],["International NGO",16,83],["Local CBO",9,83],["Women-led organization",4,83],["UN agency",2,83],["Government/public institution",1,83],["OPD",1,83],["Youth-led organization",1,83],["Other",1,83]],
+    ayClass:[["Youth-inclusive",38,83],["Youth-responsive",23,83],["Youth-specific",12,83],["Youth-led",5,83],["Not sure",2,83],["Not applicable",1,83]],
+    orgSectors:[["MHPSS",67,83],["Protection",61,83],["Child protection",60,83],["Education",58,83],["GBV",58,83],["Food security",43,83],["Livelihoods/economic recovery",42,83],["Civic participation/youth leadership",41,83],["Cash/social protection",41,83],["Early recovery/resilience",37,83],["Health",36,83],["WASH",32,83],["Shelter/NFI",32,83],["Sports/culture/recreation",29,83],["SRH",28,83],["TVET/employability",28,83],["Nutrition",27,83],["AAP/coordination",16,83],["Digital inclusion",14,83],["Environmental/climate action",14,83]],
+    orgSystems:[["Participates in coordination",72,83],["Has AAP/safeguarding/PSEA mechanism",71,83],["Reported AY interventions",79,83],["AY intervention not sure",2,83],["No AY interventions",2,83]],
+    intStatus:[["Ongoing",109,149],["Completed",23,149],["Planned",9,149],["Temporarily suspended",6,149],["Discontinued",1,149],["Missing/not reported",1,149]],
+    intFunding:[["Fully funded",72,149],["No current funding",24,149],["Partially funded",16,149],["Funding gap exists",13,149],["Funding ending within 3 months",10,149],["Funding ending within 6 months",10,149],["Missing/not reported",4,149]],
+    intSectors:[["MHPSS",87,149],["Protection",72,149],["Child protection",64,149],["Education",60,149],["GBV",54,149],["Civic participation/youth leadership",48,149],["Early recovery/resilience",45,149],["Health",38,149],["Sports/culture/recreation",31,149],["SRH",28,149],["Cash/social protection",26,149],["TVET/employability",22,149],["Livelihoods/economic recovery",19,149],["Food security",18,149],["AAP/coordination",16,149],["Digital inclusion",14,149],["Nutrition",13,149],["Shelter/NFI",13,149],["WASH",12,149],["Other",6,149]],
+    govs:[["Deir al-Balah",81,149],["Gaza",79,149],["Khan Younis",72,149],["North Gaza",44,149],["Rafah",29,149],["Jenin",20,149],["Ramallah and Al-Bireh",20,149],["Hebron",19,149],["Nablus",18,149],["Tulkarm",18,149],["oPt-wide/multiple",17,149],["Bethlehem",16,149],["Qalqiliya",14,149],["Tubas",13,149],["Jerusalem incl. East Jerusalem",11,149],["Salfit",10,149],["Jericho",9,149],["Remote/online/no fixed",5,149]],
+    groups:[["Displaced adolescents/youth",99,149],["Adolescent girls",78,149],["AY with disabilities",77,149],["Young women",74,149],["Students",69,149],["General AY population",69,149],["Refugee adolescents/youth",59,149],["Youth affected by violence",51,149],["Unemployed youth",43,149],["Out-of-school adolescents",35,149],["Youth in precarious work",28,149],["Other",11,149],["Graduates",2,149]],
+    constraints:[["Security risks",82,149],["Funding shortage",81,149],["Access/movement restrictions",76,149],["Lack of supplies",50,149],["Damage to infrastructure",23,149],["Connectivity problems",20,149],["Difficulty reaching persons with disabilities",11,149],["Coordination challenges",10,149],["Staff displacement",8,149],["Lack of trained staff",7,149]],
+    donorSectors:[["Early recovery/resilience",4,7],["Education",4,7],["SRH",4,7],["TVET/employability",4,7],["Civic participation/youth leadership",3,7],["Digital inclusion",3,7],["Food security",3,7],["Health",3,7],["Livelihoods/economic recovery",3,7],["MHPSS",3,7],["GBV",2,7],["Protection",2,7]],
+    donorGroups:[["Students",6,7],["General AY population",5,7],["Unemployed youth",4,7],["Adolescent girls",3,7],["AY with disabilities",3,7],["Young women",3,7],["Youth affected by violence",3,7],["Displaced adolescents/youth",2,7],["Refugee adolescents/youth",2,7],["Youth in precarious work",2,7],["Out-of-school adolescents/youth",1,7]],
+    underSectors:[["GBV",4,7],["SRH",4,7],["TVET/employability",4,7],["Child protection",3,7],["Digital inclusion",3,7],["Livelihoods/economic recovery",3,7],["MHPSS",3,7],["Sports/culture/recreation",3,7],["Cash/social protection",2,7],["Education",2,7],["Health",2,7],["WASH",1,7]],
+    leastGroups:[["Youth affected by violence",4,7],["Adolescent girls",3,7],["Out-of-school adolescents/youth",3,7],["Unemployed youth",3,7],["Young women",3,7],["AY with disabilities",2,7],["Displaced adolescents/youth",2,7],["Students",2,7],["General AY population",1,7]],
+    missing:[["End/expected end date",59,149],["Expected continuation beyond funding",42,149],["Actual reach figure basis",40,149],["Most important unmet need/gap",39,149],["Underserved areas",33,149],["Risk of interruption/closure",32,149],["Start date",26,149],["Budget range",24,149],["Actual reached total",21,149],["Planned target total",18,149],["Age/sex/disability disaggregation",17,149]]
+  };
+  const root=document.getElementById('dash');
+  const byId=id=>document.getElementById(id);
+  function pct(v,d){return Math.round((v/d)*1000)/10}
+  function bar(id, rows, limit){
+    const node=byId(id); if(!node)return; const slice=rows.slice(0,limit||rows.length); const max=Math.max(1,...slice.map(r=>r[1])); node.innerHTML='';
+    slice.forEach((r,i)=>{const row=document.createElement('div');row.className='bar-row';const lab=document.createElement('div');lab.className='label';lab.textContent=r[0];const track=document.createElement('div');track.className='track';const fill=document.createElement('div');fill.className='fill';fill.style.width=Math.max(2,Math.round((r[1]/max)*100))+'%';fill.style.filter='hue-rotate('+(i*9)+'deg)';track.appendChild(fill);const val=document.createElement('div');val.className='value';val.textContent=r[1]+' ('+pct(r[1],r[2])+'%)';row.append(lab,track,val);node.appendChild(row);});
+  }
+  function bindSelect(selectId, chartId, rows){const sel=byId(selectId); if(sel){sel.addEventListener('change',()=>bar(chartId,rows,Number(sel.value)));}}
+  bar('chart-crossmatch',DATA.crossmatch);bar('chart-quality',DATA.quality);bar('chart-org-type',DATA.orgType);bar('chart-ay-class',DATA.ayClass);bar('chart-org-sectors',DATA.orgSectors,12);bar('chart-org-systems',DATA.orgSystems);bar('chart-int-status',DATA.intStatus);bar('chart-int-funding',DATA.intFunding);bar('chart-int-sectors',DATA.intSectors,12);bar('chart-govs',DATA.govs,12);bar('chart-groups',DATA.groups,12);bar('chart-constraints',DATA.constraints);bar('chart-donor-sectors',DATA.donorSectors);bar('chart-donor-groups',DATA.donorGroups);bar('chart-under-sectors',DATA.underSectors);bar('chart-least-groups',DATA.leastGroups);bar('chart-missing',DATA.missing);
+  bindSelect('org-sector-count','chart-org-sectors',DATA.orgSectors);bindSelect('int-sector-count','chart-int-sectors',DATA.intSectors);bindSelect('gov-count','chart-govs',DATA.govs);bindSelect('group-count','chart-groups',DATA.groups);
+  const buttons=Array.from(root.querySelectorAll('.tabs button'));const panels=Array.from(root.querySelectorAll('.tab-panel'));buttons.forEach(btn=>btn.addEventListener('click',()=>{buttons.forEach(b=>b.setAttribute('aria-selected',b===btn?'true':'false'));panels.forEach(p=>p.classList.toggle('active',p.id===btn.getAttribute('aria-controls')))}));
+})();
+</script>
+</body>
+</html>
